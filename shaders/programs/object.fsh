@@ -16,6 +16,10 @@ in vec3 viewPos;
     in vec2 uv;
 #endif
 
+float linearizeDepthFast(float depth) {
+	return (nearPlane * farPlane) / (depth * (nearPlane - farPlane) + farPlane);
+}
+
 void iris_emitFragment() {
 
 	#if defined AFFINE_MAP && defined AFFINE_UV
@@ -37,7 +41,15 @@ void iris_emitFragment() {
 
     if (iris_discardFragment(col)) discard;
 
-	applyFog(col.rgb, viewPos);
+	#if FOG_TYPE == 0
+		float fogDist = linearizeDepthFast(gl_FragCoord.z);
+	#elif FOG_TYPE == 1
+		float fogDist = length((playerModelViewInverse * vec4(viewPos, 1.0)).xz);
+	#elif FOG_TYPE == 2
+		float fogDist = length(viewPos);
+	#endif
+
+	applyFog(col.rgb, viewPos, fogDist);
 
     albedo = col;
 }

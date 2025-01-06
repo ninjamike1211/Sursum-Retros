@@ -72,25 +72,25 @@ vec3 getSkyColor(vec3 viewPos) {
     }
 }
 
-void applyFog(inout vec3 sceneColor, vec3 viewPos) {
+void applyFog(inout vec3 sceneColor, vec3 viewPos, float fogDist) {
     vec3 fogCol;
     float fogFactor;
     
     if(isEyeInWater == 0) {
         fogCol = getOverworldSkyColor(viewPos);
-        fogFactor = min(length(viewPos) / renderDistance, 1.0);
+        fogFactor = min(fogDist / renderDistance, 1.0);
     }
     else if(isEyeInWater == 1) {
         fogCol = fogColor.rgb;
-        fogFactor = min(length(viewPos) / waterFogDist, 1.0);
+        fogFactor = min(fogDist / waterFogDist, 1.0);
     }
     else if(isEyeInWater == 2) {
         fogCol = lavaFogColor;
-        fogFactor = min(length(viewPos) / lavaFogDist, 1.0);
+        fogFactor = min(fogDist / lavaFogDist, 1.0);
     }
     else if(isEyeInWater == 3) {
         fogCol = snowFogColor;
-        fogFactor = min(length(viewPos) / snowFogDist, 1.0);
+        fogFactor = min(fogDist / snowFogDist, 1.0);
     }
 
     sceneColor = mix(sceneColor, fogCol, fogFactor);

@@ -1,0 +1,3 @@
+value.FOG_TYPE.0 = Depth
+value.FOG_TYPE.1 = Cylindrical
+value.FOG_TYPE.2 = Spherical

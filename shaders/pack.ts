@@ -11,6 +11,7 @@ function setupShader() {
         Dither_Amount : getStringSetting("DITHER_AMOUNT"),
         Color_Depth : getIntSetting("COLOR_DEPTH"),
         Resolution_Scale : getStringSetting("RESOLUTION_SCALE"),
+        Fog_Type : getIntSetting("FOG_TYPE"),
     };
 
     if(Settings.Affine_Map) defineGlobally("AFFINE_MAP", "1");
@@ -21,6 +22,7 @@ function setupShader() {
     defineGlobally("DITHER_AMOUNT", Settings.Dither_Amount);
     defineGlobally("COLOR_DEPTH", Settings.Color_Depth);
     defineGlobally("RESOLUTION_SCALE", Settings.Resolution_Scale);
+    defineGlobally("FOG_TYPE", Settings.Fog_Type);
 
     // World settings. For this demo, we will be using Vanilla-like settings.
     worldSettings.ambientOcclusionLevel = 1.0;
@@ -79,6 +81,9 @@ function setupShader() {
     registerUniforms("shadowLightPosition",
                      "screenSize",
                      "playerModelView",
+                     "playerModelViewInverse",
+                     "nearPlane",
+                     "farPlane",
                      "worldTime",
                      "fogColor",
                      "skyColor",
