@@ -3,7 +3,25 @@
 out vec3 viewPos;
 
 void iris_emitVertex(inout VertexData data) {
-    viewPos = (iris_modelViewMatrix * data.modelPos).xyz;
+    vec4 modelPos = data.modelPos;
+
+    #ifdef BILLBOARDING
+    if(iris_getLightColor(data.blockId) == vec4(1.0, 0.0, 0.0, 0.0)) {
+        vec2 uvMinBounds = iris_getTexture(data.textureId).minCoord;
+        
+        // vec2 facePos = vec2((texcoord.x - mc_midTexCoord.x) * sign(at_tangent.w) * atlasSize.x / 16.0, 0.0);
+        // vec2 centerPos = vertexPos.xz - 1.8 * facePos.x * normalize(at_tangent).xz * sign(at_tangent.w);
+        vec2 centerPos = modelPos.xz + (data.midBlock.xz / 64.0);
+        vec2 facePos = vec2(sign(data.normal.z) * length(data.midBlock.xz) / 64.0 * sign(data.uv.x - uvMinBounds.x - 0.0001), 0.0);
+
+        vec2 viewVec = normalize(playerModelViewInverse[2].xz);
+        // vec2 viewVec = -normalize(modelPos.xz);
+        mat2 rotationMatrix = mat2(vec2(viewVec.y, -viewVec.x), vec2(viewVec.x, viewVec.y));
+        modelPos.xz = (rotationMatrix * facePos) + centerPos;
+    }
+    #endif
+
+    viewPos = (iris_modelViewMatrix * modelPos).xyz;
 
     #if defined VERTEX_WOBBLE && defined VERTEX_ROUND
         vec4 clipPos = iris_projectionMatrix * vec4(viewPos, 1.0);

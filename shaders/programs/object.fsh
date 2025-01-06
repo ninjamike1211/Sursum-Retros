@@ -45,7 +45,7 @@ void iris_emitFragment() {
 		float fogDist = linearizeDepthFast(gl_FragCoord.z);
 	#elif FOG_TYPE == 1
 		float fogDist = length((playerModelViewInverse * vec4(viewPos, 1.0)).xz);
-	#elif FOG_TYPE == 2
+	#else
 		float fogDist = length(viewPos);
 	#endif
 

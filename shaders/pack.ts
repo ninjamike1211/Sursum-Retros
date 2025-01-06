@@ -12,6 +12,7 @@ function setupShader() {
         Color_Depth : getIntSetting("COLOR_DEPTH"),
         Resolution_Scale : getStringSetting("RESOLUTION_SCALE"),
         Fog_Type : getIntSetting("FOG_TYPE"),
+        Billboarding: getBoolSetting("BILLBOARDING"),
     };
 
     if(Settings.Affine_Map) defineGlobally("AFFINE_MAP", "1");
@@ -23,12 +24,17 @@ function setupShader() {
     defineGlobally("COLOR_DEPTH", Settings.Color_Depth);
     defineGlobally("RESOLUTION_SCALE", Settings.Resolution_Scale);
     defineGlobally("FOG_TYPE", Settings.Fog_Type);
+    if(Settings.Billboarding) {
+        defineGlobally("BILLBOARDING", "1");
+        setLightColor("dead_bush", 255, 0, 0, 0);
+    }
 
     // World settings. For this demo, we will be using Vanilla-like settings.
     worldSettings.ambientOcclusionLevel = 1.0;
     worldSettings.disableShade = false;
     worldSettings.renderEntityShadow = true;
     worldSettings.renderSun = true;  
+
     
     // This is an example of registering a basic texture.
     let albedoTex = new Texture("albedoTex")

@@ -10,6 +10,7 @@ function setupOptions() {
         .add(asInt("COLOR_DEPTH", 2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 196, 256).build(24))
         .add(asString("RESOLUTION_SCALE", "0.05", "0.10", "0.15", "0.20", "0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.75", "1.00").build("0.20"))
         .add(asInt("FOG_TYPE", 0, 1, 2).build(1))
+        .add(asBool("BILLBOARDING", true))
 
         .build();
 }
