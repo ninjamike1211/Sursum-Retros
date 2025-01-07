@@ -1,3 +1,80 @@
+
+function setupBlockIds() {
+    const billboardIds = [
+        "minecraft:short_grass",
+        "minecraft:tall_grass",
+        "minecraft:fern",
+        "minecraft:large_fern",
+        "minecraft:dead_bush",
+        "minecraft:nether_sprouts",
+        "minecraft:warped_roots",
+        "minecraft:crimson_roots",
+        "minecraft:hanging_roots",
+        "minecraft:pale_hanging_moss",
+        "minecraft:brown_mushroom",
+        "minecraft:red_mushroom",
+        "minecraft:warped_fungus",
+        "minecraft:crimson_fungus",
+        "minecraft:blue_orchid",
+        "minecraft:allium",
+        "minecraft:azure_bluet",
+        "minecraft:red_tulip",
+        "minecraft:orange_tulip",
+        "minecraft:pink_tulip",
+        "minecraft:white_tulip",
+        "minecraft:poppy",
+        "minecraft:oxeye_daisy",
+        "minecraft:dandelion",
+        "minecraft:lily_of_the_valley",
+        "minecraft:cornflower",
+        "minecraft:wither_rose",
+        "minecraft:closed_eyeblossom",
+        "minecraft:open_eyeblossom",
+        "minecraft:torchflower",
+        "minecraft:torchflower_crop",
+        "minecraft:lilac",
+        "minecraft:rose_bush",
+        "minecraft:peony",
+        "minecraft:sweet_berry_bush",
+        "minecraft:sugar_cane",
+        "minecraft:kelp",
+        "minecraft:kelp_plant",
+        "minecraft:cave_vines",
+        "minecraft:cave_vines_plant",
+        "minecraft:twisting_vines",
+        "minecraft:twisting_vines_plant",
+        "minecraft:weeping_vines",
+        "minecraft:weeping_vines_plant",
+        "minecraft:oak_sapling",
+        "minecraft:birch_sapling",
+        "minecraft:spruce_sapling",
+        "minecraft:jungle_sapling",
+        "minecraft:acacia_sapling",
+        "minecraft:dark_oak_sapling",
+        "minecraft:pale_oak_sapling",
+        "minecraft:cherry_sapling",
+        "minecraft:bamboo_sapling",
+        "minecraft:melon_stem",
+        "minecraft:pumpkin_stem",
+        "minecraft:brain_coral",
+        "minecraft:bubble_coral",
+        "minecraft:fire_coral",
+        "minecraft:horn_coral",
+        "minecraft:tube_coral",
+        "minecraft:dead_brain_coral",
+        "minecraft:dead_bubble_coral",
+        "minecraft:dead_fire_coral",
+        "minecraft:dead_horn_coral",
+        "minecraft:dead_tube_coral",
+        "minecraft:pointed_dripstone",
+        "minecraft:cobweb"
+    ];
+
+    for(const id of billboardIds) {
+        setLightColor(id, 255, 0, 0, 0);
+    }
+}
+
 /**
  * {@link setupShader} is your only opportunity to register textures, shaders, and uniforms. It is called once when the shader is loaded, or the screen is resized.
  */
@@ -26,7 +103,10 @@ function setupShader() {
     defineGlobally("FOG_TYPE", Settings.Fog_Type);
     if(Settings.Billboarding) {
         defineGlobally("BILLBOARDING", "1");
-        setLightColor("dead_bush", 255, 0, 0, 0);
+        // setLightColor("minecraft:dead_bush", 255, 0, 0, 0);
+        // setLightColor("minecraft:short_grass", 255, 0, 0, 0);
+        // setLightColor("minecraft:brown_mushroom", 255, 0, 0, 0);
+        setupBlockIds();
     }
 
     // World settings. For this demo, we will be using Vanilla-like settings.

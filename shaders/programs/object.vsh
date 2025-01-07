@@ -7,12 +7,17 @@ void iris_emitVertex(inout VertexData data) {
 
     #ifdef BILLBOARDING
     if(iris_getLightColor(data.blockId) == vec4(1.0, 0.0, 0.0, 0.0)) {
+        if(data.normal.x < 0.0) {
+            data.clipPos = vec4(-10, -10, -10, 1);
+            return;
+        }
+
         vec2 uvMinBounds = iris_getTexture(data.textureId).minCoord;
         
         // vec2 facePos = vec2((texcoord.x - mc_midTexCoord.x) * sign(at_tangent.w) * atlasSize.x / 16.0, 0.0);
         // vec2 centerPos = vertexPos.xz - 1.8 * facePos.x * normalize(at_tangent).xz * sign(at_tangent.w);
         vec2 centerPos = modelPos.xz + (data.midBlock.xz / 64.0);
-        vec2 facePos = vec2(sign(data.normal.z) * length(data.midBlock.xz) / 64.0 * sign(data.uv.x - uvMinBounds.x - 0.0001), 0.0);
+        vec2 facePos = vec2(0.8*sign(data.normal.z) * length(data.midBlock.xz) / 64.0 * sign(data.uv.x - uvMinBounds.x - 0.0001), 0.0);
 
         vec2 viewVec = normalize(playerModelViewInverse[2].xz);
         // vec2 viewVec = -normalize(modelPos.xz);
