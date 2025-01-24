@@ -18,10 +18,10 @@ float luminance(vec3 v) {
 
 vec3 getOverworldSkyColor(vec3 viewPos) {
 	vec3 viewDir = normalize(viewPos);
-	float upDot = max(dot(viewDir, playerModelView[1].xyz), 0.0);
+	float upDot = max(dot(viewDir, ap.camera.view[1].xyz), 0.0);
 	float mixFactor = smoothstep(0.0, 0.7, upDot);
 
-	float worldTimeAdjusted = ((worldTime + 785) % 24000) / 24000.0;
+	float worldTimeAdjusted = ((ap.world.time + 785) % 24000) / 24000.0;
 
 	vec3 horizonSkyColor;
 	vec3 upperSkyColor;
@@ -51,23 +51,23 @@ vec3 getOverworldSkyColor(vec3 viewPos) {
 		upperSkyColor = mix(NightSkyColor, SunriseSkyColor, (worldTimeAdjusted - 0.97) / 0.03);
 	}
 
-	horizonSkyColor = mix(horizonSkyColor, fogColor.rgb, rainStrength);
-	upperSkyColor = mix(upperSkyColor, skyColor.rgb, rainStrength);
+	horizonSkyColor = mix(horizonSkyColor, ap.world.fogColor.rgb, ap.world.rainStrength);
+	upperSkyColor = mix(upperSkyColor, ap.world.skyColor.rgb, ap.world.rainStrength);
 
 	return mix(horizonSkyColor, upperSkyColor, mixFactor);
 }
 
 vec3 getSkyColor(vec3 viewPos) {
-    if(isEyeInWater == 0) {
+    if(ap.camera.fluid == 0) {
         return getOverworldSkyColor(viewPos);
     }
-    else if(isEyeInWater == 1) {
-        return fogColor.rgb;
+    else if(ap.camera.fluid == 1) {
+        return ap.world.fogColor.rgb;
     }
-    else if(isEyeInWater == 2) {
+    else if(ap.camera.fluid == 2) {
         return lavaFogColor;
     }
-    else if(isEyeInWater == 3) {
+    else if(ap.camera.fluid == 3) {
         return snowFogColor;
     }
 }
@@ -76,19 +76,19 @@ void applyFog(inout vec3 sceneColor, vec3 viewPos, float fogDist) {
     vec3 fogCol;
     float fogFactor;
     
-    if(isEyeInWater == 0) {
+    if(ap.camera.fluid == 0) {
         fogCol = getOverworldSkyColor(viewPos);
-        fogFactor = min(fogDist / renderDistance, 1.0);
+        fogFactor = min(fogDist / ap.camera.far, 1.0);
     }
-    else if(isEyeInWater == 1) {
-        fogCol = fogColor.rgb;
+    else if(ap.camera.fluid == 1) {
+        fogCol = ap.world.fogColor.rgb;
         fogFactor = min(fogDist / waterFogDist, 1.0);
     }
-    else if(isEyeInWater == 2) {
+    else if(ap.camera.fluid == 2) {
         fogCol = lavaFogColor;
         fogFactor = min(fogDist / lavaFogDist, 1.0);
     }
-    else if(isEyeInWater == 3) {
+    else if(ap.camera.fluid == 3) {
         fogCol = snowFogColor;
         fogFactor = min(fogDist / snowFogDist, 1.0);
     }

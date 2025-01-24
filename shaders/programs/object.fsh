@@ -17,7 +17,7 @@ in vec3 viewPos;
 #endif
 
 float linearizeDepthFast(float depth) {
-	return (nearPlane * farPlane) / (depth * (nearPlane - farPlane) + farPlane);
+	return (ap.camera.near * ap.camera.far) / (depth * (ap.camera.near - ap.camera.far) + ap.camera.far);
 }
 
 void iris_emitFragment() {
@@ -44,7 +44,7 @@ void iris_emitFragment() {
 	#if FOG_TYPE == 0
 		float fogDist = linearizeDepthFast(gl_FragCoord.z);
 	#elif FOG_TYPE == 1
-		float fogDist = length((playerModelViewInverse * vec4(viewPos, 1.0)).xz);
+		float fogDist = length((ap.camera.viewInv * vec4(viewPos, 1.0)).xz);
 	#else
 		float fogDist = length(viewPos);
 	#endif

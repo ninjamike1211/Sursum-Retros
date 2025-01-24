@@ -19,7 +19,7 @@ void iris_emitVertex(inout VertexData data) {
         vec2 centerPos = modelPos.xz + (data.midBlock.xz / 64.0);
         vec2 facePos = vec2(0.8*sign(data.normal.z) * length(data.midBlock.xz) / 64.0 * sign(data.uv.x - uvMinBounds.x - 0.0001), 0.0);
 
-        vec2 viewVec = normalize(playerModelViewInverse[2].xz);
+        vec2 viewVec = normalize(ap.camera.viewInv[2].xz);
         // vec2 viewVec = -normalize(modelPos.xz);
         mat2 rotationMatrix = mat2(vec2(viewVec.y, -viewVec.x), vec2(viewVec.x, viewVec.y));
         modelPos.xz = (rotationMatrix * facePos) + centerPos;
@@ -34,11 +34,12 @@ void iris_emitVertex(inout VertexData data) {
         ndcPos = floor(ndcPos / VERTEX_INACCURACY) * VERTEX_INACCURACY;
         data.clipPos = vec4(ndcPos*clipPos.w, clipPos.zw);
     #else
+        vec4 clipPos = iris_projectionMatrix * vec4(viewPos, 1.0);
         #ifdef RENDER_TEXT
-            // viewPos += 0.1 * data.normal;
-            // viewPos.z += 0.1;
+            clipPos.z -= 0.005;
         #endif
-        data.clipPos = iris_projectionMatrix * vec4(viewPos, 1.0);
+
+        data.clipPos = clipPos;
     #endif
 }
 

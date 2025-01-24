@@ -17,7 +17,7 @@ vec3 GetDither(vec2 pos, vec3 c, float intensity) {
 }
 
 void main() {
-	vec2 dsRes = screenSize * RESOLUTION_SCALE;
+	vec2 dsRes = ap.game.screenSize * RESOLUTION_SCALE;
 	vec2 uvFloor = floor(uv * dsRes) / dsRes;
 
     vec3 sceneColor = texture(albedoTex, uvFloor).rgb;

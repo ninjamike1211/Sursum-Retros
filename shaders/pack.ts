@@ -164,19 +164,19 @@ function setupShader() {
     registerShader(handS);
 
     // Uniforms are registered into a buffer object. You do not specify uniforms with the `uniform` declaration in-shader; rather they are specified here.
-    registerUniforms("shadowLightPosition",
-                     "screenSize",
-                     "playerModelView",
-                     "playerModelViewInverse",
-                     "nearPlane",
-                     "farPlane",
-                     "worldTime",
-                     "fogColor",
-                     "skyColor",
-                     "rainStrength",
-                     "isEyeInWater",
-                     "renderDistance");
-    finalizeUniforms();
+    // registerUniforms("shadowLightPosition",
+    //                  "ap.game.screenSize",
+    //                  "ap.camera.view",
+    //                  "ap.camera.viewInv",
+    //                  "ap.camera.near",
+    //                  "ap.camera.far",
+    //                  "ap.world.time",
+    //                  "ap.world.fogColor",
+    //                  "ap.world.skyColor",
+    //                  "ap.world.rainStrength",
+    //                  "ap.camera.fluid",
+    //                  "ap.camera.far");
+    // finalizeUniforms();
 
 
     // The combination pass is required, and is most similar to the "final" pass in Optifine. It has one output; the main color. No textures will be considered outside of what you use in combination.
