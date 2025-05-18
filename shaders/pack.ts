@@ -1,5 +1,3 @@
-import type {} from './iris'
-
 
 function setupBlockIds() {
     const billboardIds = [
@@ -73,7 +71,8 @@ function setupBlockIds() {
     ];
 
     for(const id of billboardIds) {
-        setLightColor(NamespacedId(id), 255, 0, 0, 0);
+        print(id)
+        setLightColor(new NamespacedId(id), 255, 0, 0, 0);
     }
 }
 
@@ -105,7 +104,7 @@ export function setupShader(dimension : NamespacedId) {
         // setLightColor("minecraft:dead_bush", 255, 0, 0, 0);
         // setLightColor("minecraft:short_grass", 255, 0, 0, 0);
         // setLightColor("minecraft:brown_mushroom", 255, 0, 0, 0);
-        // setupBlockIds();
+        setupBlockIds();
     }
 
     // World settings. For this demo, we will be using Vanilla-like settings.
