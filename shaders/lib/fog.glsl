@@ -51,8 +51,8 @@ vec3 getOverworldSkyColor(vec3 viewPos) {
 		upperSkyColor = mix(NightSkyColor, SunriseSkyColor, (worldTimeAdjusted - 0.97) / 0.03);
 	}
 
-	horizonSkyColor = mix(horizonSkyColor, ap.world.fogColor.rgb, ap.world.rainStrength);
-	upperSkyColor = mix(upperSkyColor, ap.world.skyColor.rgb, ap.world.rainStrength);
+	horizonSkyColor = mix(horizonSkyColor, ap.world.fogColor.rgb, ap.world.rain);
+	upperSkyColor = mix(upperSkyColor, ap.world.skyColor.rgb, ap.world.rain);
 
 	return mix(horizonSkyColor, upperSkyColor, mixFactor);
 }

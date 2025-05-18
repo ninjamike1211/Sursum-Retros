@@ -40,6 +40,7 @@ void iris_emitFragment() {
     vec4 col = iris_sampleBaseTexLod(mUV, 0) * mColor * iris_sampleLightmap(mLight);
 
     if (iris_discardFragment(col)) discard;
+	// if(col.a < 0.0) discard;
 
 	#if FOG_TYPE == 0
 		float fogDist = linearizeDepthFast(gl_FragCoord.z);

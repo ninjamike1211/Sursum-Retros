@@ -2,7 +2,7 @@
  * Prints text to the game log.
  * @param v The text to print
  */
-declare function print(v: string);
+declare function print(v: any);
 
 /**
  * The screen width. This is generally a constant, since setupShader will run on screen resize.
@@ -22,6 +22,8 @@ declare class WorldSettings {
      * Default: 1024
      */
   shadowMapResolution: number;
+  cascadeCount: number;
+  cascadeSafeZones: number[];
   shadowMapDistance: number;
   shadowNearPlane: number;
   shadowFarPlane: number;
@@ -46,6 +48,22 @@ declare var worldSettings: WorldSettings;
  */
 interface ProgramStage {}
 
+declare class NamespacedId {
+    /**
+     * Creates a new NamespacedId from a combined string. If the string is in the format `namespace:path`, the NamespacedId will be created accordingly, otherwise it will use the `minecraft` namespace.
+     * @param combined The combined `namespace:path`, or `path` if `minecraft` is the desired namespace
+     */
+    constructor(combined : string);
+
+    /**
+     * Creates a new NamespacedId from a separate namespace and path.
+     */
+    constructor(namespace : string, path : string);
+
+    getNamespace() : string;
+    getPath() : string;
+}
+
 /**
  * The possible program stages for post passes.
  */
@@ -54,6 +72,11 @@ declare namespace Stage {
     * Runs before any rendering takes place.
     */
   let PRE_RENDER: ProgramStage;
+
+    /**
+    * Runs after the shadow pass is drawn.
+    */
+  let POST_SHADOW: ProgramStage;
 
     /**
      * Runs after all main rendering takes place.
@@ -71,6 +94,8 @@ declare namespace Stage {
   let SCREEN_SETUP: ProgramStage;
 }
 
+declare function writeMatrixToAddress(buffer : BuiltStreamingBuffer, offset : number, matrix : Matrix4f);
+
 /**
  * @see Usage
  */
@@ -85,6 +110,39 @@ interface BlendModeFunction {}
 declare function getStringSetting(name: string): string;
 declare function getBoolSetting(name: string): boolean;
 declare function getIntSetting(name: string): number;
+declare function getFloatSetting(name: string): number;
+
+declare class IntSetting {
+  needsReload(reload: boolean): IntSetting;
+  build(defaultValue: number): BuiltSetting;
+}
+declare class FloatSetting {
+  needsReload(reload: boolean): FloatSetting;
+  build(defaultValue: number): BuiltSetting;
+}
+declare class StringSetting {
+  needsReload(reload: boolean): StringSetting;
+  build(defaultValue: string): BuiltSetting;
+}
+declare class BuiltSetting {}
+
+declare class Page {
+  constructor(name: string);
+
+  add(...settings): Page;
+  build(): BuiltPage;
+}
+declare class BuiltPage {}
+
+declare function asInt(name: string, ...values: number[]): IntSetting;
+declare function asFloat(name: string, ...values: number[]): FloatSetting;
+declare function putTextLabel(text : string) : BuiltSetting
+declare function putTranslationLabel(text : string) : BuiltSetting
+declare function asString(name: string, ...values: string[]): StringSetting;
+declare function asBool(name: string, defaultValue: boolean, reload: boolean): BuiltSetting;
+
+declare var EMPTY: BuiltPage;
+
 
 /**
  * Sets the light color for the provided block.
@@ -96,7 +154,7 @@ declare function getIntSetting(name: string): number;
  * @alpha
  */
 declare function setLightColor(
-  name: string,
+  name: NamespacedId,
   r: number,
   g: number,
   b: number,
@@ -109,24 +167,13 @@ declare function setLightColor(
  * @param hex The hex color to set
  * @alpha
  */
-declare function setLightColor(name: string, hex: number): void;
+declare function setLightColor(name: NamespacedId, hex: number): void;
 
 // Uniforms
 
-/**
- * Registers uniforms.
- *
- * @throws IllegalStateException
- * if {@link finalizeUniforms} has already been called
- *
- * @param uniforms A list of uniforms to register.
- */
-declare function registerUniforms(...uniforms: string[]): void;
+declare function addTag(index : number, tag : NamespacedId) : void;
 
-/**
- * Finalizes uniforms.
- */
-declare function finalizeUniforms(): void;
+declare function createTag(tag : NamespacedId, ...blocks : NamespacedId[]) : NamespacedId;
 
 /**
  * Registers a define for all future shaders. Behavior for shaders already made is undefined.
@@ -250,6 +297,16 @@ declare class ObjectShader {
   eval(loc: string): ObjectShader;
   fragment(loc: string): ObjectShader;
 
+  blendFunc(
+        index: number,
+        srcRGB: BlendModeFunction,
+        dstRGB: BlendModeFunction,
+        srcA: BlendModeFunction,
+        dstA: BlendModeFunction,
+    ): ObjectShader;
+
+  blendOff(index : number) : ObjectShader;
+
   target(index: number, tex: BuiltTexture | undefined): ObjectShader;
   ssbo(index: number, buf: BuiltBuffer | undefined): ObjectShader;
   ubo(index: number, buf: BuiltBuffer | undefined): ObjectShader;
@@ -315,16 +372,202 @@ declare class CombinationPass {
 /**
  * The result of a {@link Buffer}.
  */
+interface BuiltGPUBuffer extends BuiltBuffer {}
+
+/**
+ * The result of a {@link Buffer}.
+ */
 interface BuiltBuffer {}
+
+/**
+ * The result of a {@link StreamingBuffer}.
+ */
+class BuiltStreamingBuffer implements BuiltBuffer {
+    setInt(offset : number, value: number): void;
+    setFloat(offset : number, value: number): void;
+    setBool(offset : number, value: boolean): void;
+    uploadData() : void;
+}
 
 /**
  * A GPU buffer, to be bound as either an SSBO or UBO. Cannot be modified at all on the CPU.
  */
-declare class Buffer {
+declare class GPUBuffer {
   constructor(size: number);
-  clear(c: boolean): Buffer;
+  clear(c: boolean): GPUBuffer;
 
   build(): BuiltBuffer;
+}
+
+declare class Vector2f {
+    /**
+     * Initializes to 0.
+     */
+    constructor();
+    constructor(x : number, y: number);
+    constructor(other : Vector2f);
+
+    x() : number;
+    y() : number;
+
+    x(newValue : number) : void;
+    y(newValue : number) : void;
+}
+
+declare class Vector3f {
+    /**
+     * Initializes to 0.
+     */
+    constructor();
+
+    constructor(x : number, y: number, z: number);
+    constructor(other : Vector3f);
+
+    x() : number;
+    y() : number;
+    z() : number;
+
+    x(newValue : number) : void;
+    y(newValue : number) : void;
+    z(newValue : number) : void;
+}
+
+declare class Vector4f {
+    /**
+     * Initializes to (0, 0, 0, 1).
+     */
+    constructor();
+
+    constructor(x : number, y: number, z: number, w : number);
+    constructor(other : Vector4f);
+
+    x() : number;
+    y() : number;
+    z() : number;
+    w() : number;
+
+    x(newValue : number) : void;
+    y(newValue : number) : void;
+    z(newValue : number) : void;
+    w(newValue : number) : void;
+}
+
+declare class Matrix4f {
+    /**
+     * Initializes to identity.
+     */
+    constructor();
+
+    /**
+     * Makes a copy of {@link matrix}.
+     * @param matrix The matrix to copy
+     * @return a new copy
+     */
+    constructor(matrix : Matrix4f);
+
+    m00() : number;
+    m01() : number;
+    m02() : number;
+    m03() : number;
+    m10() : number;
+    m11() : number;
+    m12() : number;
+    m13() : number;
+    m20() : number;
+    m21() : number;
+    m22() : number;
+    m23() : number;
+    m30() : number;
+    m31() : number;
+    m32() : number;
+    m33() : number;
+
+    m00(newValue : number) : void;
+    m01(newValue : number) : void;
+    m02(newValue : number) : void;
+    m03(newValue : number) : void;
+    m10(newValue : number) : void;
+    m11(newValue : number) : void;
+    m12(newValue : number) : void;
+    m13(newValue : number) : void;
+    m20(newValue : number) : void;
+    m21(newValue : number) : void;
+    m22(newValue : number) : void;
+    m23(newValue : number) : void;
+    m30(newValue : number) : void;
+    m31(newValue : number) : void;
+    m32(newValue : number) : void;
+    m33(newValue : number) : void;
+
+    /**
+     * This transforms the matrix with another one, and stores the result in {@link saveMatrix}.
+     * @param otherMatrix The other matrix
+     * @param saveMatrix The matrix that will store the result
+     * @returns saveMatrix
+     */
+    mul(otherMatrix : Matrix4f, saveMatrix : Matrix4f) : Matrix4f;
+
+    /**
+     * This transforms the matrix with a {@link Vector4f}, and stores the result in {@link saveVector}.
+     * @param vector The vector to transform
+     * @param saveVector The vector that will store the result
+     * @returns saveVector
+     */
+    transform(vector : Vector4f, saveVector : Vector4f) : Vector4f;
+
+    /**
+     * This transforms the matrix with a {@link Vector3f}, and stores the result in {@link saveVector}.
+     * @param vector The vector to transform
+     * @param saveVector The vector that will store the result
+     * @returns saveVector
+     */
+    transformPosition(vector : Vector3f, saveVector : Vector3f) : Vector3f;
+
+    translate(x : number, y : number, z : number) : Matrix4f;
+    scale(x : number, y : number, z : number) : Matrix4f;
+    rotate(angle : number, x : number, y : number, z : number) : Matrix4f;
+}
+
+declare class WorldState {
+    /**
+     * Returns the projection matrix. This will always be a new copy.
+     */
+    projection() : Matrix4f;
+
+    /**
+     * Returns the view matrix. This will always be a new copy.
+     */
+    view() : Matrix4f;
+
+    /**
+     * Returns the camera position. This will always be a new copy.
+     */
+    cameraPos() : Vector3f;
+
+    /**
+     * Return the last frame time (ap.time.delta).
+     */
+    lastFrameTime() : number;
+
+    /**
+     * Return the elapsed frame time (ap.time.elapsed).
+     */
+    frameTimeCounter() : number;
+
+    /**
+     * Return the current frame (ap.time.frames).
+     */
+    currentFrame() : number;
+}
+
+/**
+ * A buffer with data streamed every frame from the CPU.
+ * Automatically cleared
+ */
+declare class StreamingBuffer {
+  constructor(size: number);
+
+  build(): BuiltStreamingBuffer;
 }
 
 // Textures

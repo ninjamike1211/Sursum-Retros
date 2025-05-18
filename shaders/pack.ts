@@ -1,3 +1,5 @@
+import type {} from './iris'
+
 
 function setupBlockIds() {
     const billboardIds = [
@@ -71,23 +73,20 @@ function setupBlockIds() {
     ];
 
     for(const id of billboardIds) {
-        setLightColor(id, 255, 0, 0, 0);
+        setLightColor(NamespacedId(id), 255, 0, 0, 0);
     }
 }
 
-/**
- * {@link setupShader} is your only opportunity to register textures, shaders, and uniforms. It is called once when the shader is loaded, or the screen is resized.
- */
-function setupShader() {
+export function setupShader(dimension : NamespacedId) {
     const Settings = {
         Affine_Map : getBoolSetting("AFFINE_MAP"),
         Affine_Wrap : getBoolSetting("AFFINE_WRAP"),
         Vertex_Wobble : getBoolSetting("VERTEX_WOBBLE"),
-        Vertex_Inaccuracy : getStringSetting("VERTEX_INACCURACY"),
+        Vertex_Inaccuracy : getFloatSetting("VERTEX_INACCURACY"),
         Dither_Colors : getIntSetting("DITHER_COLORS"),
-        Dither_Amount : getStringSetting("DITHER_AMOUNT"),
+        Dither_Amount : getFloatSetting("DITHER_AMOUNT"),
         Color_Depth : getIntSetting("COLOR_DEPTH"),
-        Resolution_Scale : getStringSetting("RESOLUTION_SCALE"),
+        Resolution_Scale : getFloatSetting("RESOLUTION_SCALE"),
         Fog_Type : getIntSetting("FOG_TYPE"),
         Billboarding: getBoolSetting("BILLBOARDING"),
     };
@@ -106,7 +105,7 @@ function setupShader() {
         // setLightColor("minecraft:dead_bush", 255, 0, 0, 0);
         // setLightColor("minecraft:short_grass", 255, 0, 0, 0);
         // setLightColor("minecraft:brown_mushroom", 255, 0, 0, 0);
-        setupBlockIds();
+        // setupBlockIds();
     }
 
     // World settings. For this demo, we will be using Vanilla-like settings.
